@@ -1,0 +1,871 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RTL-FIX</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/styles/atom-one-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/highlight.min.js"></script>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            border: none;
+            outline: none;
+        }
+
+        ::-webkit-scrollbar {
+            background-color: var(--bg);
+            width: 12px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background-color: var(--border);
+        }
+
+        ::-webkit-scrollbar-corner {
+            background-color: var(--border);
+        }
+
+        :root {
+            color-scheme: dark;
+            --bg: #07070a;
+            /* تیره‌تر شد */
+            --panel: #0a0a0f;
+            /* تیره‌تر شد */
+            --panel-2: #161620;
+            /* تیره‌تر شد */
+            --border: #1f1f2e;
+            /* تیره‌تر شد */
+            --text: #f1f5f9;
+            /* روشن‌تر و خواناتر برای کنتراست عالی */
+            --muted: #94a3b8;
+            /* واضح‌تر برای متون جانبی */
+            --accent: #2563eb;
+            --accent-hover: #1d4ed8;
+            --accent-light: #60a5fa;
+            --code-bg: #060609;
+            /* مشکی عمیق برای کدها */
+            --danger: #ef4444;
+        }
+
+        html,
+        body {
+            height: 100%;
+        }
+
+        body {
+            display: flex;
+            flex-direction: column;
+            font-family: "Vazirmatn", sans-serif;
+            width: 100%;
+            min-height: 100vh;
+            background: var(--bg);
+            color: var(--text);
+        }
+
+        /* ===== Top bar ===== */
+        .topbar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            padding: 12px 28px;
+            border-bottom: 1px solid var(--border);
+            background: var(--panel);
+            position: sticky;
+            top: 0;
+            z-index: 20;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+        }
+
+        .brand-section {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .brand-section h1 {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--text);
+            letter-spacing: -0.02em;
+        }
+
+        .tabs {
+            display: flex;
+            background: var(--bg);
+            padding: 4px;
+            border-radius: 10px;
+            border: 1px solid var(--border);
+        }
+
+        .tab-btn {
+            font-family: inherit;
+            font-size: 0.9rem;
+            /* بزرگ‌تر شد */
+            font-weight: 500;
+            padding: 7px 18px;
+            border-radius: 7px;
+            background: transparent;
+            color: var(--muted);
+            cursor: pointer;
+            transition: all .2s ease;
+        }
+
+        .tab-btn.active {
+            background: var(--panel-2);
+            color: var(--text);
+            font-weight: 600;
+        }
+
+        .actions {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .status {
+            font-size: 0.82rem;
+            color: var(--muted);
+            opacity: 0;
+            transition: opacity .3s ease;
+        }
+
+        .status.show {
+            opacity: 1;
+        }
+
+        .btn {
+            font-family: inherit;
+            font-size: 0.9rem;
+            /* بزرگ‌تر شد */
+            font-weight: 500;
+            padding: 8px 16px;
+            border-radius: 8px;
+            background: var(--panel-2);
+            color: var(--text);
+            cursor: pointer;
+            border: 1px solid var(--border);
+            transition: all .15s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+
+        .btn:hover {
+            background: var(--accent-hover);
+        }
+
+        .btn.sm {
+            padding: 5px 10px;
+            font-size: 0.8rem;
+        }
+
+        .btn.danger {
+            background: rgba(239, 68, 68, 0.1);
+            color: var(--danger);
+            border-color: rgba(239, 68, 68, 0.2);
+        }
+
+        .btn.danger:hover {
+            background: var(--danger);
+            color: #fff;
+        }
+
+        /* ===== Main Container ===== */
+        .main-container {
+            flex: 1;
+            width: 85%;
+            max-width: 1150px;
+            margin: 0 auto;
+            padding: 28px 16px 60px;
+        }
+
+        .tab-content {
+            display: none;
+            flex-direction: column;
+            gap: 22px;
+        }
+
+        .tab-content.active {
+            display: flex;
+        }
+
+        /* ===== Editor & Preview ===== */
+        .editor-box {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .editor-label {
+            font-size: 0.9rem;
+            /* بزرگ‌تر شد */
+            color: var(--muted);
+            font-weight: 600;
+        }
+
+        textarea#here {
+            width: 100%;
+            height: 180px;
+            min-height: 110px;
+            max-height: 50vh;
+            resize: vertical;
+            padding: 16px 18px;
+            border-radius: 12px;
+            font-family: inherit;
+            background: var(--panel);
+            color: var(--text);
+            font-size: 1.1rem;
+            /* بزرگ‌تر و خواناتر شد */
+            line-height: 2;
+            /* فاصله خطوط بهتر */
+            border: 1px solid var(--border);
+            transition: border-color 0.2s;
+        }
+
+        textarea#here:focus {
+            border-color: var(--accent);
+        }
+
+        .preview-wrap {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .preview {
+            border-radius: 12px;
+            padding: 24px;
+            background: var(--panel);
+            border: 1px solid var(--border);
+            line-height: 2;
+            /* فاصله خطوط بهتر */
+            font-size: 1.15rem;
+            /* متون پیش‌نمایش کاملاً واضح و بزرگ‌تر شدند */
+            overflow-wrap: anywhere;
+            min-height: 120px;
+        }
+
+        .preview.is-empty {
+            border-style: dashed;
+            border-color: var(--border);
+            background: transparent;
+            color: var(--muted);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.95rem;
+        }
+
+        /* Markdown Typography Styling (Larger Sizes) */
+        .preview h1,
+        .preview h2,
+        .preview h3 {
+            font-weight: 700;
+            margin: 1.3em 0 0.6em;
+            color: #ffffff;
+        }
+
+        .preview h1 {
+            font-size: 1.65rem;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 8px;
+        }
+
+        .preview h2 {
+            font-size: 1.4rem;
+            color: var(--accent-light);
+        }
+
+        .preview h3 {
+            font-size: 1.2rem;
+        }
+
+        .preview p {
+            margin: 0.7em 0;
+        }
+
+        .preview strong {
+            color: #ffffff;
+            font-weight: 700;
+        }
+
+        .preview em {
+            color: var(--accent-light);
+            font-style: normal;
+        }
+
+        .preview a {
+            color: var(--accent-light);
+            text-decoration: underline;
+        }
+
+        .preview hr {
+            border: none;
+            border-top: 1px dashed var(--border);
+            margin: 1.6em 0;
+        }
+
+        .preview blockquote {
+            margin: 0.9em 0;
+            padding: 10px 18px;
+            border-right: 4px solid var(--accent);
+            background: rgba(37, 99, 235, 0.1);
+            color: #e2e8f0;
+            border-radius: 6px;
+        }
+
+        .preview ul,
+        .preview ol {
+            margin: 0.6em 0;
+            padding-inline-start: 1.6em;
+        }
+
+        .preview code {
+            font-family: monospace;
+            direction: ltr;
+            background: var(--code-bg);
+            color: #a5f3fc;
+            padding: 0.2em 0.5em;
+            border-radius: 5px;
+            font-size: 0.95em;
+            border: 1px solid var(--border);
+        }
+
+        .preview pre {
+            direction: ltr;
+            text-align: left;
+            background: var(--code-bg);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 26px 18px 16px;
+            margin: 1.2em 0;
+            overflow-x: auto;
+        }
+
+        .pre-wrap {
+            position: relative;
+        }
+
+        .pre-lang {
+            position: absolute;
+            top: 6px;
+            left: 12px;
+            font-size: 0.8rem;
+            color: var(--muted);
+            text-transform: uppercase;
+        }
+
+        /* ===== History View ===== */
+        .history-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .history-list {
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
+
+        .history-card {
+            background: var(--panel);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 18px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            transition: border-color .15s ease;
+        }
+
+        .history-card:hover {
+            /* border-color: var(--muted); */
+            border-color: var(--accent);
+
+        }
+
+        .history-card-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.82rem;
+            color: var(--muted);
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 10px;
+        }
+
+        .history-card-body {
+            font-size: 1rem;
+            /* بزرگ‌تر شد */
+            color: var(--text);
+            max-height: 70px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            direction: rtl;
+        }
+
+        .history-card-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+        }
+
+        .empty-history {
+            text-align: center;
+            padding: 50px;
+            color: var(--muted);
+            font-size: 1rem;
+            border: 1px dashed var(--border);
+            border-radius: 12px;
+        }
+
+        /* ===== Modal Overlay ===== */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(5px);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 50;
+            padding: 20px;
+        }
+
+        .modal-overlay.open {
+            display: flex;
+        }
+
+        .modal {
+            width: 100%;
+            max-width: 950px;
+            height: min(85vh, 850px);
+            background: var(--panel);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            box-shadow: 0 25px 70px rgba(0, 0, 0, 0.8);
+        }
+
+        .modal-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px 24px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        textarea#modalEditor {
+            flex: 1;
+            width: 100%;
+            padding: 24px;
+            font-family: inherit;
+            background: var(--bg);
+            color: var(--text);
+            font-size: 1.15rem;
+            /* ویرایشگر کامل هم بزرگ‌تر شد */
+            line-height: 2;
+            resize: none;
+        }
+
+        @media (max-width: 600px) {
+            .topbar {
+                padding: 10px 14px;
+            }
+
+            .brand-section h1 {
+                display: none;
+            }
+
+            .main-container {
+                width: 95%;
+            }
+
+            textarea#here {
+                font-size: 1rem;
+            }
+
+            .preview {
+                font-size: 1rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Top Navigation Bar -->
+    <div class="topbar">
+        <div class="brand-section">
+            <h1>RTL-FIX</h1>
+            <div class="tabs">
+                <button class="tab-btn active" data-tab="editorTab">ویرایشگر</button>
+                <button class="tab-btn" data-tab="historyTab">تاریخچه</button>
+            </div>
+        </div>
+
+        <div class="actions">
+            <div class="status" id="status">ذخیره شد</div>
+            <button class="btn" id="copyBtn">کپی خروجی</button>
+            <button class="btn primary" id="openModalBtn">ویرایش کامل</button>
+        </div>
+    </div>
+
+    <!-- Main Content Container -->
+    <div class="main-container">
+
+        <!-- Tab 1: Editor & Preview -->
+        <div class="tab-content active" id="editorTab">
+            <div class="editor-box">
+                <div class="editor-label">متن ورودی (Markdown Supported)</div>
+                <textarea id="here" placeholder="اینجا بنویسید..." spellcheck="false"></textarea>
+            </div>
+
+            <div class="preview-wrap">
+                <div class="editor-label">پیش‌نمایش خروجی</div>
+                <div class="preview is-empty" id="preview">پیش‌نمایش خروجی تمیز، همین‌جا نشان داده می‌شود…</div>
+            </div>
+        </div>
+
+        <!-- Tab 2: History Manager -->
+        <div class="tab-content" id="historyTab">
+            <div class="history-header">
+                <div class="editor-label">نسخه‌های ذخیره‌شده سابقه</div>
+                <button class="btn danger sm" id="clearAllHistoryBtn">پاک‌سازی همه</button>
+            </div>
+            <div class="history-list" id="historyList">
+                <!-- History Items Will Render Here Dynamic -->
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Full Editor Modal -->
+    <div class="modal-overlay" id="modalOverlay">
+        <div class="modal">
+            <div class="modal-header">
+                <span style="font-size: 1rem; font-weight: 600;">حالت ویرایش کامل</span>
+                <button class="btn primary" id="closeModalBtn">تمام و بستن</button>
+            </div>
+            <textarea id="modalEditor" spellcheck="false" placeholder="بنویسید..."></textarea>
+        </div>
+    </div>
+
+    <script>
+        const STORAGE_KEY = "note-text";
+        const HISTORY_KEY = "note-history-list";
+
+        const textarea = document.getElementById("here");
+        const modalEditor = document.getElementById("modalEditor");
+        const modalOverlay = document.getElementById("modalOverlay");
+        const openModalBtn = document.getElementById("openModalBtn");
+        const closeModalBtn = document.getElementById("closeModalBtn");
+        const preview = document.getElementById("preview");
+        const statusEl = document.getElementById("status");
+        const copyBtn = document.getElementById("copyBtn");
+        const historyList = document.getElementById("historyList");
+        const clearAllHistoryBtn = document.getElementById("clearAllHistoryBtn");
+
+        // ---------- Tab Management ----------
+        const tabBtns = document.querySelectorAll('.tab-btn');
+        const tabContents = document.querySelectorAll('.tab-content');
+
+        tabBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                tabBtns.forEach(b => b.classList.remove('active'));
+                tabContents.forEach(c => c.classList.remove('active'));
+
+                btn.classList.add('active');
+                document.getElementById(btn.dataset.tab).classList.add('active');
+
+                if (btn.dataset.tab === 'historyTab') {
+                    renderHistoryList();
+                }
+            });
+        });
+
+        // ---------- Markdown Parsing Engine ----------
+        function escapeHtml(str) {
+            return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+        }
+
+        function renderInline(text) {
+            text = text.replace(/`([^`]+)`/g, (_, code) => `<code>${code}</code>`);
+            text = text.replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>");
+            text = text.replace(/__([^_]+)__/g, "<strong>$1</strong>");
+            text = text.replace(/\*([^*]+)\*/g, "<em>$1</em>");
+            text = text.replace(/\[([^\]]+)\]\(([^)]+)\)/g, (_, label, url) => `<a href="${url}" target="_blank" rel="noopener noreferrer">${label}</a>`);
+            return text;
+        }
+
+        function renderMarkdown(raw) {
+            const lines = escapeHtml(raw).split("\n");
+            let html = "";
+            let i = 0;
+            let paragraphBuf = [], listBuf = [], quoteBuf = [];
+            let listType = null;
+
+            function flushAll() {
+                if (paragraphBuf.length) {
+                    html += `<p>${paragraphBuf.map(renderInline).join("<br>")}</p>`;
+                    paragraphBuf = [];
+                }
+                if (listBuf.length) {
+                    const tag = listType === "ol" ? "ol" : "ul";
+                    html += `<${tag}>${listBuf.map(li => `<li>${renderInline(li)}</li>`).join("")}</${tag}>`;
+                    listBuf = []; listType = null;
+                }
+                if (quoteBuf.length) {
+                    html += `<blockquote>${quoteBuf.map(renderInline).join("<br>")}</blockquote>`;
+                    quoteBuf = [];
+                }
+            }
+
+            while (i < lines.length) {
+                const line = lines[i];
+
+                const fenceMatch = line.match(/^```\s*(\S*)\s*$/);
+                if (fenceMatch) {
+                    flushAll();
+                    const lang = fenceMatch[1] || "";
+                    const codeLines = [];
+                    i++;
+                    while (i < lines.length && !/^```\s*$/.test(lines[i])) {
+                        codeLines.push(lines[i]);
+                        i++;
+                    }
+                    html += `<div class="pre-wrap">${lang ? `<span class="pre-lang">${lang}</span>` : ""}<pre><code class="${lang ? `language-${lang}` : ""}">${codeLines.join("\n")}</code></pre></div>`;
+                    i++;
+                    continue;
+                }
+
+                const headingMatch = line.match(/^(#{1,6})\s+(.*)$/);
+                if (headingMatch) {
+                    flushAll();
+                    const level = headingMatch[1].length;
+                    html += `<h${level}>${renderInline(headingMatch[2].trim())}</h${level}>`;
+                    i++;
+                    continue;
+                }
+
+                if (/^(-{3,}|\*{3,}|_{3,})\s*$/.test(line.trim())) {
+                    flushAll();
+                    html += "<hr>";
+                    i++;
+                    continue;
+                }
+
+                const quoteMatch = line.match(/^>\s?(.*)$/);
+                if (quoteMatch) {
+                    if (paragraphBuf.length || listBuf.length) flushAll();
+                    quoteBuf.push(quoteMatch[1]);
+                    i++;
+                    continue;
+                } else if (quoteBuf.length) {
+                    flushAll();
+                }
+
+                const olMatch = line.match(/^\d+\.\s+(.*)$/);
+                if (olMatch) {
+                    if (paragraphBuf.length) flushAll();
+                    if (listType && listType !== "ol") flushAll();
+                    listType = "ol";
+                    listBuf.push(olMatch[1]);
+                    i++;
+                    continue;
+                }
+
+                const ulMatch = line.match(/^[-*]\s+(.*)$/);
+                if (ulMatch) {
+                    if (paragraphBuf.length) flushAll();
+                    if (listType && listType !== "ul") flushAll();
+                    listType = "ul";
+                    listBuf.push(ulMatch[1]);
+                    i++;
+                    continue;
+                } else if (listBuf.length) {
+                    flushAll();
+                }
+
+                if (line.trim() === "") {
+                    flushAll();
+                    i++;
+                    continue;
+                }
+
+                paragraphBuf.push(line.trim());
+                i++;
+            }
+            flushAll();
+            return html;
+        }
+
+        function updatePreview(value) {
+            const trimmed = (value || "").trim();
+            if (!trimmed) {
+                preview.classList.add("is-empty");
+                preview.textContent = "پیش‌نمایش خروجی تمیز، همین‌جا نشان داده می‌شود…";
+                return;
+            }
+            preview.classList.remove("is-empty");
+            preview.innerHTML = renderMarkdown(value);
+            preview.querySelectorAll("pre code").forEach((block) => hljs.highlightElement(block));
+        }
+
+        // ---------- History & LocalStorage Logic ----------
+        function loadText() {
+            return localStorage.getItem(STORAGE_KEY) || "";
+        }
+
+        function getHistory() {
+            try {
+                return JSON.parse(localStorage.getItem(HISTORY_KEY)) || [];
+            } catch {
+                return [];
+            }
+        }
+
+        function saveText(value) {
+            localStorage.setItem(STORAGE_KEY, value);
+
+            // Push to History Stack
+            if (value.trim()) {
+                let history = getHistory();
+                const now = new Date();
+                const timeString = now.toLocaleTimeString('fa-IR', { hour: '2-digit', minute: '2-digit' });
+                const dateString = now.toLocaleDateString('fa-IR');
+
+                // Avoid duplicate top item
+                if (!history.length || history[0].content !== value) {
+                    history.unshift({
+                        id: Date.now(),
+                        content: value,
+                        timestamp: `${dateString} - ${timeString}`
+                    });
+                    // Keep max 30 history items
+                    if (history.length > 30) history.pop();
+                    localStorage.setItem(HISTORY_KEY, JSON.stringify(history));
+                }
+            }
+
+            statusEl.classList.add("show");
+            clearTimeout(saveText._t);
+            saveText._t = setTimeout(() => statusEl.classList.remove("show"), 1000);
+        }
+
+        function renderHistoryList() {
+            const history = getHistory();
+            if (!history.length) {
+                historyList.innerHTML = `<div class="empty-history">هیچ تاریخچه‌ای ثبت نشده است.</div>`;
+                return;
+            }
+
+            historyList.innerHTML = history.map(item => `
+                <div class="history-card" data-id="${item.id}">
+                    <div class="history-card-meta">
+                        <span>تاریخ ثبت: ${item.timestamp}</span>
+                    </div>
+                    <div class="history-card-body">${escapeHtml(item.content)}</div>
+                    <div class="history-card-actions">
+                        <button class="btn sm" onclick="restoreHistory(${item.id})">بازگردانی</button>
+                        <button class="btn sm danger" onclick="deleteHistoryItem(${item.id})">حذف</button>
+                    </div>
+                </div>
+            `).join("");
+        }
+
+        window.restoreHistory = function (id) {
+            const history = getHistory();
+            const target = history.find(h => h.id === id);
+            if (target) {
+                textarea.value = target.content;
+                handleChange(target.content);
+                // Switch back to editor
+                document.querySelector('[data-tab="editorTab"]').click();
+            }
+        };
+
+        window.deleteHistoryItem = function (id) {
+            let history = getHistory().filter(h => h.id !== id);
+            localStorage.setItem(HISTORY_KEY, JSON.stringify(history));
+            renderHistoryList();
+        };
+
+        clearAllHistoryBtn.addEventListener('click', () => {
+            if (confirm("آیا از پاک کردن کل تاریخچه اطمینان دارید؟")) {
+                localStorage.removeItem(HISTORY_KEY);
+                renderHistoryList();
+            }
+        });
+
+        // ---------- Init & Inputs Handlers ----------
+        const initial = loadText();
+        textarea.value = initial;
+        updatePreview(initial);
+
+        let saveTimeout;
+        function handleChange(value) {
+            updatePreview(value);
+            clearTimeout(saveTimeout);
+            saveTimeout = setTimeout(() => saveText(value), 600);
+        }
+
+        textarea.addEventListener("input", () => handleChange(textarea.value));
+
+        // ---------- Modal Control ----------
+        function openModal() {
+            modalEditor.value = textarea.value;
+            modalOverlay.classList.add("open");
+            document.body.style.overflow = "hidden";
+            setTimeout(() => modalEditor.focus(), 50);
+        }
+
+        function closeModal() {
+            textarea.value = modalEditor.value;
+            handleChange(textarea.value);
+            modalOverlay.classList.remove("open");
+            document.body.style.overflow = "";
+        }
+
+        openModalBtn.addEventListener("click", openModal);
+        closeModalBtn.addEventListener("click", closeModal);
+        modalOverlay.addEventListener("click", (e) => { if (e.target === modalOverlay) closeModal(); });
+        document.addEventListener("keydown", (e) => {
+            if (e.key === "Escape" && modalOverlay.classList.contains("open")) closeModal();
+        });
+        modalEditor.addEventListener("input", () => {
+            textarea.value = modalEditor.value;
+            clearTimeout(saveTimeout);
+            saveTimeout = setTimeout(() => saveText(modalEditor.value), 600);
+        });
+
+        // ---------- Copy Helper ----------
+        copyBtn.addEventListener("click", async () => {
+            try {
+                await navigator.clipboard.writeText(preview.innerText || "");
+                copyBtn.textContent = "کپی شد ✓";
+            } catch {
+                copyBtn.textContent = "خطا";
+            }
+            setTimeout(() => (copyBtn.textContent = "کپی خروجی"), 1200);
+        });
+    </script>
+</body>
+
+</html>
