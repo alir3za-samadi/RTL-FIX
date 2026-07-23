@@ -354,6 +354,37 @@
             overflow-x: auto;
         }
 
+        .preview table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1.2em 0;
+            font-size: 0.95rem;
+            overflow: hidden;
+            border-radius: 10px;
+            border: 1px solid var(--border);
+        }
+
+        .preview th,
+        .preview td {
+            padding: 10px 14px;
+            border: 1px solid var(--border);
+            text-align: right;
+        }
+
+        .preview th {
+            background: var(--panel-2);
+            color: #ffffff;
+            font-weight: 700;
+        }
+
+        .preview td {
+            background: var(--panel);
+        }
+
+        .preview tr:nth-child(even) td {
+            background: var(--panel-2);
+        }
+
         .pre-wrap {
             position: relative;
         }
@@ -668,6 +699,53 @@
                     flushAll();
                     html += "<hr>";
                     i++;
+                    continue;
+                }
+
+                const isTableRow = (l) => /^\s*\|?.*\|.*\|?\s*$/.test(l) && l.includes("|");
+                const isTableSeparator = (l) => /^\s*\|?\s*:?-{2,}:?\s*(\|\s*:?-{2,}:?\s*)*\|?\s*$/.test(l);
+
+                if (isTableRow(line) && i + 1 < lines.length && isTableSeparator(lines[i + 1])) {
+                    flushAll();
+
+                    const splitRow = (l) => {
+                        let cells = l.trim();
+                        if (cells.startsWith("|")) cells = cells.slice(1);
+                        if (cells.endsWith("|")) cells = cells.slice(0, -1);
+                        return cells.split("|").map(c => c.trim());
+                    };
+
+                    const alignRow = lines[i + 1].trim();
+                    const aligns = splitRow(alignRow).map(cell => {
+                        const startsColon = cell.startsWith(":");
+                        const endsColon = cell.endsWith(":");
+                        if (startsColon && endsColon) return "center";
+                        if (endsColon) return "left";
+                        if (startsColon) return "right";
+                        return "";
+                    });
+
+                    const headerCells = splitRow(line);
+                    let tableHtml = "<table><thead><tr>";
+                    headerCells.forEach((cell, idx) => {
+                        const align = aligns[idx] ? ` style="text-align:${aligns[idx]}"` : "";
+                        tableHtml += `<th${align}>${renderInline(cell)}</th>`;
+                    });
+                    tableHtml += "</tr></thead><tbody>";
+
+                    i += 2;
+                    while (i < lines.length && isTableRow(lines[i]) && lines[i].trim() !== "") {
+                        const rowCells = splitRow(lines[i]);
+                        tableHtml += "<tr>";
+                        rowCells.forEach((cell, idx) => {
+                            const align = aligns[idx] ? ` style="text-align:${aligns[idx]}"` : "";
+                            tableHtml += `<td${align}>${renderInline(cell)}</td>`;
+                        });
+                        tableHtml += "</tr>";
+                        i++;
+                    }
+                    tableHtml += "</tbody></table>";
+                    html += tableHtml;
                     continue;
                 }
 
