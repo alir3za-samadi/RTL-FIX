@@ -32,7 +32,7 @@
 
 ## نحوه‌ی استفاده
 
-0. میتوانید از این [Preview](https://htmlpreview.github.io/?https://github.com/alir3za-samadi/RTL-FIX/blob/main/RTL-FIX-V3.html) به حالت اجرا شده index.html همین repository یا با مراجعه به [Demo](https://rtl-fix.freedev.app/) به پروژه دسترسی داشته باشید. 
+۰. برای دسترسی به پروژه می‌توانید از [Preview](https://htmlpreview.github.io/?https://github.com/alir3za-samadi/RTL-FIX/blob/main/RTL-FIX-V3.html) (حالت اجراشدهٔ `index.html` همین مخزن) یا [Demo](https://rtl-fix.freedev.app/) استفاده کنید.
 
 ۱. فایل `RTL-FIX-V3.html` را در هر مرورگری باز کنید (نیازی به نصب یا سرور نیست).
 ۲. متن Markdown خودتان را در جعبه‌ی ویرایشگر بنویسید یا پیست کنید.
